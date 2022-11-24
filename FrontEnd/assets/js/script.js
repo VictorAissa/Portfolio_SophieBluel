@@ -8,34 +8,21 @@ const filters = document.createElement("div");
 filters.classList.add("filters");
 portfolio.insertBefore(filters, gallery);
 
-// Création du premier bouton des filtres
-filters.innerHTML = `<button class="filter active_filter">Tous</button>`;
-
-// Récupération des catégories sur le serveur
-fetch(serverUrl + "categories")
-    .then((value) => {
-        if (value.ok) {
-            return value.json();
-        }
-    })
-    // Création des boutons des filtres par catégorie
-    .then((categories) => {
-        categories.forEach((category) => {
-            let button = document.createElement("button");
-            button.classList.add("filter");
-            button.textContent = category.name;
-            filters.append(button);
-        });
-    })
-    .catch((err) => {
-        console.log(err);
+// Fonction de création des filtres
+const filterCreation = (element, classes = [], content) => {
+    let filter = document.createElement(element);
+    classes.forEach((classe) => {
+        filter.classList.add(classe);
     });
+    filter.textContent = content;
+    filters.append(filter);
+};
 
-// Fonction création et affichage des cards
+// Fonction de création et affichage des cards
 const cardCreation = (project) => {
     const card = document.createElement("figure");
     card.classList.add("card");
-    card.setAttribute(`data-${project.categoryId}`, "");
+    card.dataset.category = project.categoryId;
     // Création des images
     const image = document.createElement("img");
     image.crossOrigin = "anonymous";
@@ -49,6 +36,26 @@ const cardCreation = (project) => {
     card.append(image);
     card.append(description);
 };
+
+// Création du premier bouton des filtres
+const button = filterCreation("button", ["filter", "active_filter"], "Tous");
+
+// Récupération des catégories sur le serveur
+fetch(serverUrl + "categories")
+    .then((value) => {
+        if (value.ok) {
+            return value.json();
+        }
+    })
+    // Création des boutons des filtres par catégorie
+    .then((categories) => {
+        categories.forEach((category) => {
+            filterCreation("button", ["filter"], category.name);
+        });
+    })
+    .catch((err) => {
+        console.log(err);
+    });
 
 // Récupération des projets depuis le serveur
 fetch(serverUrl + "works")
@@ -79,17 +86,13 @@ fetch(serverUrl + "works")
                 for (let card of cards) {
                     card.style.display = "none";
                     // Affichage des cartes au clic sur le filtre correspondant
-                    if (index === 0) {
-                        card.style.display = "block";
-                    }
-                    if (index in card.dataset) {
+                    if (index === 0 || index == card.dataset.category) {
                         card.style.display = "block";
                     }
                 }
             });
         });
     })
-
     .catch((err) => {
         console.log(err);
     });
