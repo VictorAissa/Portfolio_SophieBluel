@@ -3,14 +3,17 @@ const serverUrl = "http://localhost:5678/api/";
 let emailInput = document.querySelector("#email");
 let passwordInput = document.querySelector("#password");
 let form = document.querySelector("form");
+const loggedUserData = {
+    userId: "",
+    token: "",
+};
 
-form.addEventListener("submit", function (e) {
-    e.preventDefault();
+form.addEventListener("submit", (event) => {
+    event.preventDefault();
     const user = {
         email: emailInput.value,
         password: passwordInput.value,
     };
-
     fetch(serverUrl + "users/login", {
         method: "POST",
         headers: {
@@ -19,12 +22,24 @@ form.addEventListener("submit", function (e) {
         body: JSON.stringify(user),
     })
         .then((response) => {
-            console.log(response);
-            alert(response.statusText);
-            /*if (response.ok === true) 
-            else*/
+            if (response.ok === false) {
+                if (response.statusText == "Not Found")
+                    alert("L'adresse mail est fausse");
+                if (response.statusText == "Unauthorized")
+                    alert("Le mdp est faux");
+            } else {
+                alert("Vous êtes connecté");
+                return response.json();
+            }
+        })
+        .then((data) => {
+            loggedUserData.userId = data.userId;
+            loggedUserData.token = data.token;
+            localStorage.setItem("token", data.token);
+            document.location.href =
+                "http://127.0.0.1:5500/FrontEnd/index.html";
         })
         .catch((error) => {
-            alert("Une erreur est survenue");
+            console.log(error);
         });
 });
