@@ -23,10 +23,8 @@ form.addEventListener("submit", (event) => {
     })
         .then((response) => {
             if (response.ok === false) {
-                if (response.statusText == "Not Found")
-                    alert("L'adresse mail est fausse");
-                if (response.statusText == "Unauthorized")
-                    alert("Le mdp est faux");
+                if (response.status === 404) alert("L'adresse mail est fausse");
+                if (response.status === 401) alert("Le mdp est faux");
             } else {
                 alert("Vous êtes connecté");
                 return response.json();
@@ -35,6 +33,7 @@ form.addEventListener("submit", (event) => {
         .then((data) => {
             loggedUserData.userId = data.userId;
             loggedUserData.token = data.token;
+            localStorage.setItem("id", data.userId);
             localStorage.setItem("token", data.token);
             document.location.href =
                 "http://127.0.0.1:5500/FrontEnd/index.html";
@@ -43,3 +42,4 @@ form.addEventListener("submit", (event) => {
             console.log(error);
         });
 });
+localStorage.clear();

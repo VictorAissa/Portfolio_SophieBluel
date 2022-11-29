@@ -96,3 +96,50 @@ fetch(serverUrl + "works")
     .catch((err) => {
         console.log(err);
     });
+
+//Modification après login
+const body = document.querySelector("body");
+const header = document.querySelector("header");
+const introduction = document.querySelector("#introduction");
+const introductionFigure = document.querySelector("#introduction > figure");
+const introductionArticle = document.querySelector("#introduction > article");
+const introductionArticleTitle = document.querySelector("#introduction h2");
+const portfolioTitle = document.querySelector("#portfolio h2");
+
+const editionButtonArray = [];
+
+let editionBanner;
+let editionButton;
+
+const createBannner = () => {
+    editionBanner = document.createElement("div");
+    editionBanner.classList.add("edition_banner");
+    editionBanner.innerHTML = `<i class="fa-regular fa-pen-to-square modal_trigger"></i>
+    <p>Mode édition</p>
+    <button class="changes_publication">publier les changements</button>`;
+};
+
+const createButton = () => {
+    for (let index = 0; index < 3; index++) {
+        editionButton = document.createElement("div");
+        editionButton.classList.add("edit_button");
+        editionButton.classList.add(`edit_button_${index}`);
+        editionButton.classList.add("modal_trigger");
+        editionButton.innerHTML = `<i class="fa-regular fa-pen-to-square"></i>
+    <p>modifier</p>`;
+        editionButtonArray.push(editionButton);
+    }
+};
+
+if (localStorage.token) {
+    createBannner();
+    body.insertBefore(editionBanner, header);
+    createButton();
+    console.log(editionButtonArray);
+    introductionFigure.append(editionButtonArray[0]);
+    introductionArticle.insertBefore(
+        editionButtonArray[1],
+        introductionArticleTitle
+    );
+    portfolio.append(editionButtonArray[2]);
+}
