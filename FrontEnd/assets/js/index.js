@@ -124,7 +124,6 @@ const createButton = () => {
         editionButton = document.createElement("div");
         editionButton.classList.add("edit_button");
         editionButton.classList.add(`edit_button_${index}`);
-        editionButton.classList.add("modal_trigger");
         editionButton.innerHTML = `<i class="fa-regular fa-pen-to-square"></i>
     <p>modifier</p>`;
         editionButtonArray.push(editionButton);
@@ -141,5 +140,6 @@ if (localStorage.token) {
         editionButtonArray[1],
         introductionArticleTitle
     );
+    editionButtonArray[2].classList.add("modal_trigger");
     portfolio.append(editionButtonArray[2]);
 }
