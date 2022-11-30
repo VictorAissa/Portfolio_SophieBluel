@@ -3,11 +3,8 @@ const serverUrl = "http://localhost:5678/api/";
 let emailInput = document.querySelector("#email");
 let passwordInput = document.querySelector("#password");
 let form = document.querySelector("form");
-const loggedUserData = {
-    userId: "",
-    token: "",
-};
 
+//Envoi des données du formulaire au clic sur input
 form.addEventListener("submit", (event) => {
     event.preventDefault();
     const user = {
@@ -21,6 +18,7 @@ form.addEventListener("submit", (event) => {
         },
         body: JSON.stringify(user),
     })
+        //Affichage des messages d'erreurs selon validité des champs remplis
         .then((response) => {
             if (response.ok === false) {
                 if (response.status === 404) alert("L'adresse mail est fausse");
@@ -30,9 +28,8 @@ form.addEventListener("submit", (event) => {
                 return response.json();
             }
         })
+        //Stockage des userId et token puis redirection vers page d'accueil
         .then((data) => {
-            loggedUserData.userId = data.userId;
-            loggedUserData.token = data.token;
             localStorage.setItem("id", data.userId);
             localStorage.setItem("token", data.token);
             document.location.href =
@@ -42,4 +39,3 @@ form.addEventListener("submit", (event) => {
             console.log(error);
         });
 });
-localStorage.clear();

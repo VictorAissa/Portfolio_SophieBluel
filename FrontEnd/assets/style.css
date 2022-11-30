@@ -91,6 +91,10 @@ video {
     font: inherit;
     vertical-align: baseline;
 }
+img {
+    width: 100%;
+    object-fit: cover;
+}
 /* HTML5 display-role reset for older browsers */
 article,
 aside,
@@ -141,6 +145,7 @@ body {
 .edition_banner {
     width: 100%;
     height: 60px;
+    position: relative;
     background-color: #000;
     color: #fff;
     display: flex;
@@ -149,7 +154,7 @@ body {
     gap: 20px;
     font-size: 16px;
     font-weight: 400;
-    /* z-index: 10; */
+    z-index: 10;
 }
 .edition_banner > .changes_publication {
     width: 215px;
@@ -159,7 +164,6 @@ body {
     font-family: "Work Sans";
     font-size: 14px;
     font-weight: 500;
-    z-index: 10;
 }
 .edition_banner > i {
     font-size: 20px;
@@ -288,9 +292,6 @@ em {
     grid-column-gap: 20px;
     grid-row-gap: 20px;
 }
-.gallery img {
-    width: 100%;
-}
 .form_sections {
     width: 50%;
     margin: auto;
@@ -353,7 +354,7 @@ footer nav ul {
     top: 0;
     left: 0;
     width: 100%;
-    height: 100vh;
+    height: 100%;
     transition: visibility 0.4s;
     z-index: 1;
 }
@@ -381,11 +382,12 @@ footer nav ul {
     background: #fff;
     border-radius: 10px;
     position: absolute;
-    top: 40%;
+    top: 55%;
     left: 50%;
     transform: translate(-50%, calc(-50% - 50px));
     display: flex;
     flex-direction: column;
+    align-items: center;
     transition: opacity 0.4s ease-out, transform 0.4s ease-out;
 }
 .modal_container.active .modal {
@@ -394,17 +396,45 @@ footer nav ul {
     transition: opacity 0.4s 0.2s ease-out, transform 0.4s 0.2s ease-out;
 }
 .modal > .modal_header {
+    width: 100%;
     display: flex;
     justify-content: space-between;
 }
 .modal > h3 {
     text-align: center;
-    margin-bottom: 45px;
     font-size: 26px;
     font-weight: 400;
 }
 .modal > .modal_content {
     width: 80%;
-    align-self: center;
+    padding: 35px 0 55px 0;
     border-bottom: 2px solid #b3b3b3;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+}
+.modal_content > .editing_card {
+    position: relative;
+}
+.editing_card > figcaption {
+    font-size: 12px;
+    font-weight: 400;
+}
+.editing_card > figcaption i {
+    width: 17px;
+    height: 17px;
+    display: flex;
+    border-radius: 2px;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    color: #fff;
+    background-color: #000;
+    font-size: 10px;
+}
+.gallery_supression {
+    color: #d65353;
+    margin: -10px 0 10px 0;
 }

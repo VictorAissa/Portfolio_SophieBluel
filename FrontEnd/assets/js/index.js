@@ -2,6 +2,7 @@ const serverUrl = "http://localhost:5678/api/";
 
 const portfolio = document.querySelector("#portfolio");
 const gallery = document.querySelector(".gallery");
+const projectsArray = [];
 
 // Création du bandeau Filtres
 const filters = document.createElement("div");
@@ -68,6 +69,7 @@ fetch(serverUrl + "works")
     .then((projects) => {
         const projectsSet = new Set(projects);
         projectsSet.forEach((project) => {
+            projectsArray.push(project);
             cardCreation(project);
         });
 
@@ -134,7 +136,6 @@ if (localStorage.token) {
     createBannner();
     body.insertBefore(editionBanner, header);
     createButton();
-    console.log(editionButtonArray);
     introductionFigure.append(editionButtonArray[0]);
     introductionArticle.insertBefore(
         editionButtonArray[1],
