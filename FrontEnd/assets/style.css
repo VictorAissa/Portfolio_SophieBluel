@@ -344,32 +344,25 @@ footer nav ul {
 }
 
 /* Modale */
-.modal_container {
-    visibility: hidden;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    transition: visibility 0.4s;
-    z-index: 1;
-}
-.modal_container.active {
-    visibility: visible;
-}
 .overlay {
+    display: none;
     opacity: 0;
     width: 100%;
     height: 100%;
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 1;
     background-color: #00000050;
     transition: opacity 0.4s 0.2s ease-out;
 }
-.modal_container.active .overlay {
+.overlay.active {
+    display: block;
     opacity: 1;
     transition: opacity 0.4s ease-out;
 }
 .modal {
-    opacity: 0;
+    opacity: 1;
     width: 40%;
     max-width: 500px;
     min-width: 300px;
@@ -377,15 +370,17 @@ footer nav ul {
     position: absolute;
     top: 55%;
     left: 50%;
+    z-index: 10;
     transform: translate(-50%, calc(-50% - 50px));
     border-radius: 10px;
     background: #fff;
-    display: flex;
+    display: none;
     flex-direction: column;
     align-items: center;
     transition: opacity 0.4s ease-out, transform 0.4s ease-out;
 }
-.modal_container.active .modal {
+.modal.active {
+    display: flex;
     opacity: 1;
     transform: translate(-50%, -50%);
     transition: opacity 0.4s 0.2s ease-out, transform 0.4s 0.2s ease-out;
@@ -400,7 +395,7 @@ footer nav ul {
     font-size: 26px;
     font-weight: 400;
 }
-.modal > .modal_content {
+#supression_modal > .modal_content {
     width: 80%;
     padding: 35px 0 55px 0;
     border-bottom: 2px solid #b3b3b3;
@@ -408,7 +403,7 @@ footer nav ul {
     grid-template-columns: repeat(5, 1fr);
     gap: 10px;
 }
-.modal_content > .editing_card {
+.editing_card {
     position: relative;
 }
 .editing_card > figcaption {

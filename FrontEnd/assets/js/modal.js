@@ -40,14 +40,27 @@ if (localStorage.token) {
     portfolio.append(editingButton);
 }
 
-const modalContainer = document.querySelector(".modal_container");
-const modalTriggers = document.querySelectorAll(".modal_trigger");
-const modalContent = document.querySelector(".modal_content");
-const projects_editing_button = document.querySelector(
+//Gestion de la modale au clic
+
+const supressionModal = document.querySelector("#supression_modal");
+const addingModal = document.querySelector("#adding_modal");
+const overlay = document.querySelector(".overlay");
+const supressionModalContent = document.querySelector(
+    "#supression_modal .modal_content"
+);
+const addingModalContent = document.querySelector(
+    "#adding_modal .modal_content"
+);
+
+const projectsEditingButton = document.querySelector(
     "#projects_editing_button"
 );
 
-//Gestion de la modale au clic
+const modalClosingIcon = document.querySelectorAll(".modal_closing_icon");
+const addingModalTrigger = document.querySelector("#supression_modal input");
+const gallerySupressionTrigger = document.querySelectorAll(
+    ".gallery_supression_trigger"
+);
 
 const modalCardCreation = (project) => {
     //Création de la card
@@ -63,18 +76,23 @@ const modalCardCreation = (project) => {
     description.innerHTML = `<p class="editing_trigger">éditer</p>
         <i class="fa-solid fa-trash-can project_supression_trigger"></i>`;
     // Insertion des cards et de leur contenu dans le document
-    modalContent.append(editingCard);
+    supressionModalContent.append(editingCard);
     editingCard.append(image);
     editingCard.append(description);
 };
 
 const projectSupression = () => {
-    const modalCardsArray = Array.from(modalContent.querySelectorAll("figure"));
-    modalCardsArray.forEach((card) => {
-        const trashIcon = card.querySelector(".project_supression_trigger");
-        trashIcon.addEventListener("click", (event) => {
-            event.preventDefault;
-            fetch(serverUrl + "works" + "/" + card.dataset.id, {
+    let trashIcons = supressionModalContent.querySelectorAll(
+        ".project_supression_trigger"
+    );
+    trashIcons.forEach((icon) => {
+        icon.addEventListener("click", (e) => {
+            e.preventDefault();
+            let projectId = icon
+                .closest(".editing_card")
+                .getAttribute("data-id");
+            console.log(projectId);
+            fetch(serverUrl + "works" + "/" + projectId, {
                 method: "DELETE",
                 headers: {
                     Authorization: "Bearer " + "" + localStorage.token,
@@ -83,6 +101,7 @@ const projectSupression = () => {
             })
                 .then((response) => {
                     response.json();
+                    // afficher succes de la supression
                 })
                 .then(() => {
                     gallery.innerHTML = "";
@@ -94,7 +113,6 @@ const projectSupression = () => {
                             }
                         })
                         .then((projects) => {
-                            getAllProjects(projects, modalCardCreation);
                             getAllProjects(projects, cardCreation);
                         });
                 });
@@ -102,23 +120,48 @@ const projectSupression = () => {
     });
 };
 
-//Affichage de la modale au clic
-modalTriggers.forEach((trigger) => {
-    trigger.addEventListener("click", (e) => {
-        modalContainer.classList.toggle("active");
-        if (modalContainer.classList.contains("active") === true) {
-            modalContent.innerHTML = "";
-            fetch(serverUrl + "works")
-                .then((value) => {
-                    if (value.ok) {
-                        return value.json();
-                    }
-                })
-                .then((projects) => getAllProjects(projects, modalCardCreation))
-                .then(() => projectSupression())
-                .catch((err) => {
-                    console.log(err);
-                });
-        }
+const modalOpening = (modal) => {
+    overlay.classList.add("active");
+    modal.classList.add("active");
+};
+
+const modalClosing = (modal) => {
+    overlay.classList.remove("active");
+    modal.classList.remove("active");
+};
+
+// Ouverture et gestion de la modale supression au clic
+projectsEditingButton.addEventListener("click", () => {
+    modalOpening(supressionModal);
+    supressionModalContent.innerHTML = "";
+    fetch(serverUrl + "works")
+        .then((value) => {
+            if (value.ok) {
+                return value.json();
+            }
+        })
+        .then((projects) => getAllProjects(projects, modalCardCreation))
+        .then(() => projectSupression())
+        .catch((err) => {
+            console.log(err);
+        });
+});
+
+// Ouverture et gestion de la modale adding au clic
+addingModalTrigger.addEventListener("click", () => {
+    modalClosing(supressionModal);
+    modalOpening(addingModal);
+});
+
+//Fermeture des modales au clic
+overlay.addEventListener("click", () => {
+    modalClosing(supressionModal);
+    modalClosing(addingModal);
+});
+
+modalClosingIcon.forEach((icon) => {
+    icon.addEventListener("click", () => {
+        modalClosing(supressionModal);
+        modalClosing(addingModal);
     });
 });
