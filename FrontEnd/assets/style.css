@@ -142,7 +142,7 @@ body {
     font-family: "Work Sans";
     font-size: 14px;
 }
-.edition_banner {
+.editing_banner {
     width: 100%;
     height: 60px;
     position: relative;
@@ -156,7 +156,11 @@ body {
     font-weight: 400;
     z-index: 10;
 }
-.edition_banner > .changes_publication {
+.edition_banner > i {
+    font-size: 20px;
+    cursor: pointer;
+}
+.edition_banner > .changes_publication_button {
     width: 215px;
     height: 40px;
     border: none;
@@ -164,10 +168,6 @@ body {
     font-family: "Work Sans";
     font-size: 14px;
     font-weight: 500;
-}
-.edition_banner > i {
-    font-size: 20px;
-    cursor: pointer;
 }
 header {
     display: flex;
@@ -177,7 +177,6 @@ header {
 section {
     margin: 50px 0;
 }
-
 h1 {
     display: flex;
     flex-direction: column;
@@ -186,13 +185,11 @@ h1 {
     font-weight: 800;
     color: #b1663c;
 }
-
 h1 > span {
     font-family: "Work Sans";
     font-size: 10px;
     letter-spacing: 0.1em;
 }
-
 h2 {
     font-family: "Syne";
     font-weight: 700;
@@ -208,7 +205,6 @@ nav li {
     padding: 0 10px;
     font-size: 1.2em;
 }
-
 li:hover,
 li a:hover {
     color: #b1663c;
@@ -242,15 +238,15 @@ em {
     display: flex;
     cursor: pointer;
 }
-.edit_button_0 {
+#introduction_figure_button {
     margin: auto;
     width: 80%;
     transform: translateY(10px);
 }
-.edit_button_1 {
+#introduction_article_button {
     margin-bottom: 1em;
 }
-.edit_button_2 {
+#projects_editing_button {
     position: absolute;
     top: 8px;
     right: 8%;
@@ -271,7 +267,7 @@ em {
 }
 .filter {
     border: 1px solid #1d6154;
-    border-radius: 9999px;
+    border-radius: 999px;
     background-color: #fff;
     color: #1d6154;
     display: flex;
@@ -331,8 +327,8 @@ em {
 input[type="submit"] {
     width: 180px;
     height: 35px;
-    border-radius: 60px;
     border: none;
+    border-radius: 60px;
     font-family: "Syne";
     font-weight: 700;
     color: white;
@@ -363,10 +359,9 @@ footer nav ul {
 }
 .overlay {
     opacity: 0;
-    position: absolute;
     width: 100%;
     height: 100%;
-    background: #333333d3;
+    background-color: #00000050;
     transition: opacity 0.4s 0.2s ease-out;
 }
 .modal_container.active .overlay {
@@ -379,12 +374,12 @@ footer nav ul {
     max-width: 500px;
     min-width: 300px;
     padding: 20px;
-    background: #fff;
-    border-radius: 10px;
     position: absolute;
     top: 55%;
     left: 50%;
     transform: translate(-50%, calc(-50% - 50px));
+    border-radius: 10px;
+    background: #fff;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -423,18 +418,18 @@ footer nav ul {
 .editing_card > figcaption i {
     width: 17px;
     height: 17px;
-    display: flex;
-    border-radius: 2px;
-    justify-content: center;
-    align-items: center;
     position: absolute;
     top: 5px;
     right: 5px;
-    color: #fff;
+    border-radius: 2px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     background-color: #000;
+    color: #fff;
     font-size: 10px;
 }
-.gallery_supression {
+.gallery_supression_trigger {
     color: #d65353;
     margin: -10px 0 10px 0;
 }

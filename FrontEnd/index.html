@@ -15,9 +15,9 @@
 </head>
 
 <body>
-	<!-- Modale -->
-	<aside class="modal_container">
-		<div class="overlay modal_trigger"></div>
+	<!-- Modales -->
+	<div class="overlay supression_modal_trigger"></div>
+	<div id="supression_modal" class="modal_container" id="gallery">
 		<div class="modal">
 			<div class="modal_header">
 				<i class="fa-solid fa-arrow-left-long" style="visibility: hidden"></i>
@@ -26,9 +26,22 @@
 			<h3>Galerie photo</h3>
 			<div class="modal_content"></div>
 			<input type="submit" value="Ajouter une photo">
-			<div class="gallery_supression">Supprimer la galerie</div>
+			<div class="gallery_supression_trigger">Supprimer la galerie</div>
 		</div>
-	</aside>
+	</div>
+
+	<div id="adding_modal" class="modal_container" id="gallery">
+		<div class="modal">
+			<div class="modal_header">
+				<i class="fa-solid fa-arrow-left-long" style="visibility: hidden"></i>
+				<i class="fa-solid fa-xmark"></i>
+			</div>
+			<h3>Galerie photo</h3>
+			<div class="modal_content"></div>
+			<input type="submit" value="Ajouter une photo">
+			<div class="gallery_supression_trigger">Supprimer la galerie</div>
+		</div>
+	</div>
 
 	<header>
 		<h1>Sophie Bluel <span>Architecte d'intérieur</span></h1>

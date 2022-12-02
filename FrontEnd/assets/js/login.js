@@ -32,8 +32,7 @@ form.addEventListener("submit", (event) => {
         .then((data) => {
             localStorage.setItem("id", data.userId);
             localStorage.setItem("token", data.token);
-            document.location.href =
-                "http://127.0.0.1:5500/FrontEnd/index.html";
+            document.location.href = "index.html";
         })
         .catch((error) => {
             console.log(error);
