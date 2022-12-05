@@ -57,6 +57,10 @@ const addingModalTrigger = document.querySelector("#supression_modal input");
 const gallerySupressionTrigger = document.querySelector(
     ".gallery_supression_trigger"
 );
+const modalForm = addingModal.querySelector("form");
+const image = addingModal.querySelector("#image_upload");
+const title = addingModal.querySelector("#title_input");
+const category = addingModal.querySelector("#category_input");
 
 const modalCardCreation = (project) => {
     //Création de la card
@@ -81,6 +85,7 @@ const projectSupression = () => {
     let trashIcons = supressionModalContent.querySelectorAll(
         ".project_supression_trigger"
     );
+
     trashIcons.forEach((icon) => {
         icon.addEventListener("click", () => {
             let projectId = icon
@@ -159,12 +164,22 @@ const displayImage = () => {
         const reader = new FileReader();
         reader.addEventListener("load", () => {
             uploadedImage = reader.result;
-            console.log(uploadedImage);
             addingModal.querySelector(
                 ".image_upload_container"
             ).style.backgroundImage = `url(${uploadedImage})`;
         });
         reader.readAsDataURL(this.files[0]);
+    });
+};
+
+const toggleSubmitButtonStyle = () => {
+    const submitButton = addingModal.querySelector('input[type="submit"');
+    modalForm.addEventListener("change", () => {
+        if (image.value && title.value && category.value) {
+            submitButton.classList.remove("inactive_button");
+        } else {
+            submitButton.classList.add("inactive_button");
+        }
     });
 };
 
@@ -192,30 +207,22 @@ projectsEditingButton.addEventListener("click", () => {
 addingModalTrigger.addEventListener("click", () => {
     modalClosing(supressionModal);
     modalOpening(addingModal);
-    const modalForm = addingModal.querySelector("form");
     displayImage();
+    toggleSubmitButtonStyle();
+
     modalForm.addEventListener("submit", (e) => {
         e.preventDefault();
         const projectData = new FormData(modalForm);
-        for (const item of projectData) {
-            console.log(item[0], item[1]);
-        }
-        // const cards = supressionModalContent.querySelectorAll(".editing_card");
-        // let id = cards.length + 1;
-        // projectData.append("id", id);
-        // projectData.append("userId", localStorage.userId);
         fetch(serverUrl + "works", {
             method: "POST",
             headers: {
-                Authorization: "Bearer " + "" + localStorage.token,
-                "Content-Type": "application/json;charset=utf-8",
+                Authorization: "Bearer " + localStorage.token,
             },
             body: projectData,
         })
             .then((response) => {
                 console.log(response);
             })
-            .then((data) => {})
             .catch((error) => {
                 console.log(error);
             });

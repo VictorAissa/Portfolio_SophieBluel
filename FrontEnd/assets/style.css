@@ -442,6 +442,7 @@ footer nav ul {
 .gallery_supression_trigger {
     color: #d65353;
     margin: -10px 0 10px 0;
+    cursor: pointer;
 }
 #adding_modal .image_upload_container {
     width: 100%;
