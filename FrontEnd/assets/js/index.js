@@ -2,7 +2,6 @@ const serverUrl = "http://localhost:5678/api/";
 
 const portfolio = document.querySelector("#portfolio");
 const gallery = document.querySelector(".gallery");
-const projectsArray = [];
 
 // Création du bandeau Filtres
 const filters = document.createElement("div");
@@ -48,6 +47,30 @@ const getAllProjects = (projects, fonction) => {
 // Création du premier bouton des filtres
 const button = filterCreation("button", ["filter", "active_filter"], "Tous");
 
+// Fonction d'application des filtres
+const filtersApplication = () => {
+    let filtersList = document.querySelectorAll(".filter");
+    filtersList.forEach((filter, index) => {
+        filter.addEventListener("click", function () {
+            // Application de la classe active sur bouton du filtre
+            document
+                .querySelector(".active_filter")
+                .classList.remove("active_filter");
+            this.classList.add("active_filter");
+
+            // Masquage par défaut de toutes les cartes
+            let cards = document.querySelectorAll(".card");
+            for (let card of cards) {
+                card.style.display = "none";
+                // Affichage des cartes au clic sur le filtre correspondant
+                if (index === 0 || index == card.dataset.category) {
+                    card.style.display = "block";
+                }
+            }
+        });
+    });
+};
+
 // Récupération des catégories sur le serveur
 fetch(serverUrl + "categories")
     .then((value) => {
@@ -74,33 +97,8 @@ fetch(serverUrl + "works")
     })
     // Création des cards et affichage par défaut
     .then((projects) => {
-        const projectsSet = new Set(projects);
-        projectsSet.forEach((project) => {
-            projectsArray.push(project);
-            cardCreation(project);
-        });
-
-        // Application des filtres
-        let filtersList = document.querySelectorAll(".filter");
-        filtersList.forEach((filter, index) => {
-            filter.addEventListener("click", function () {
-                // Application de la classe active sur bouton du filtre
-                document
-                    .querySelector(".active_filter")
-                    .classList.remove("active_filter");
-                this.classList.add("active_filter");
-
-                // Masquage par défaut de toutes les cartes
-                let cards = document.querySelectorAll(".card");
-                for (let card of cards) {
-                    card.style.display = "none";
-                    // Affichage des cartes au clic sur le filtre correspondant
-                    if (index === 0 || index == card.dataset.category) {
-                        card.style.display = "block";
-                    }
-                }
-            });
-        });
+        getAllProjects(projects, cardCreation);
+        filtersApplication();
     })
     .catch((err) => {
         console.log(err);

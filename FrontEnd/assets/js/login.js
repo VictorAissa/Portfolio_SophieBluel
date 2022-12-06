@@ -21,6 +21,7 @@ form.addEventListener("submit", (event) => {
         //Affichage des messages d'erreurs selon validité des champs remplis
         .then((response) => {
             if (response.ok === false) {
+                // Afficher reponse dans conteneur approprié
                 if (response.status === 404) alert("L'adresse mail est fausse");
                 if (response.status === 401) alert("Le mdp est faux");
             } else {
