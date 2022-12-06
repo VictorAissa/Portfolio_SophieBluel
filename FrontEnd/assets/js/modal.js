@@ -1,10 +1,6 @@
 const body = document.querySelector("body");
 const header = document.querySelector("body > header");
 const introduction = document.querySelector("#introduction");
-const introductionFigure = document.querySelector("#introduction > figure");
-const introductionArticle = document.querySelector("#introduction > article");
-const introductionArticleTitle = document.querySelector("#introduction h2");
-const portfolioTitle = document.querySelector("#portfolio h2");
 
 //Creation de la bannière et des boutons édition
 let editingBanner;
@@ -31,16 +27,19 @@ if (localStorage.token) {
     body.insertBefore(editingBanner, header);
 
     createEditingButton("introduction_figure_button");
+    const introductionFigure = introduction.querySelector("figure");
     introductionFigure.append(editingButton);
 
     createEditingButton("introduction_article_button");
+    const introductionArticle = introduction.querySelector("article");
+    const introductionArticleTitle = introduction.querySelector("h2");
     introductionArticle.insertBefore(editingButton, introductionArticleTitle);
 
     createEditingButton("projects_editing_button");
     portfolio.append(editingButton);
 }
 
-//Gestion de la modale au clic
+// GESTION DES MODALES
 
 const supressionModal = document.querySelector("#supression_modal");
 const addingModal = document.querySelector("#adding_modal");
@@ -48,20 +47,25 @@ const overlay = document.querySelector(".overlay");
 const supressionModalContent = document.querySelector(
     "#supression_modal .modal_content"
 );
-const projectsEditingButton = document.querySelector(
-    "#projects_editing_button"
+const uploadedImageContainer = addingModal.querySelector(
+    ".image_upload_container"
 );
-const modalClosingIcon = document.querySelectorAll(".modal_closing_icon");
-const previousModalIcon = document.querySelector(".previous_icon");
-const addingModalTrigger = document.querySelector("#supression_modal input");
-const gallerySupressionTrigger = document.querySelector(
-    ".gallery_supression_trigger"
-);
-const modalForm = addingModal.querySelector("form");
 const image = addingModal.querySelector("#image_upload");
 const title = addingModal.querySelector("#title_input");
 const category = addingModal.querySelector("#category_input");
 
+// Fonctions de gestion d'ouverture/fermeture des modales
+const modalOpening = (modal) => {
+    overlay.classList.add("active");
+    modal.classList.add("active");
+};
+
+const modalClosing = (modal) => {
+    overlay.classList.remove("active");
+    modal.classList.remove("active");
+};
+
+// Fonction de création des cartes de la modale supression
 const modalCardCreation = (project) => {
     //Création de la card
     const editingCard = document.createElement("figure");
@@ -81,109 +85,95 @@ const modalCardCreation = (project) => {
     editingCard.append(description);
 };
 
-const projectSupression = () => {
-    let trashIcons = supressionModalContent.querySelectorAll(
-        ".project_supression_trigger"
-    );
-
-    trashIcons.forEach((icon) => {
-        icon.addEventListener("click", () => {
-            let projectId = icon
-                .closest(".editing_card")
-                .getAttribute("data-id");
-            fetch(serverUrl + "works" + "/" + projectId, {
-                method: "DELETE",
-                headers: {
-                    Authorization: "Bearer " + "" + localStorage.token,
-                    "Content-Type": "application/json;charset=utf-8",
-                },
-            })
-                .then((response) => {
-                    // afficher succes de la supression
+// Fonctions de supression d'un ou de tous les projets
+const projectSupression = (projectNumber) => {
+    fetch(serverUrl + "works" + "/" + projectNumber, {
+        method: "DELETE",
+        headers: {
+            Authorization: "Bearer " + "" + localStorage.token,
+            "Content-Type": "application/json;charset=utf-8",
+        },
+    })
+        .then((response) => {
+            // afficher succes/insucces de la supression
+        })
+        .then(() => {
+            gallery.innerHTML = "";
+            fetch(serverUrl + "works")
+                .then((value) => {
+                    if (value.ok) {
+                        return value.json();
+                    }
                 })
-                .then(() => {
-                    gallery.innerHTML = "";
-                    fetch(serverUrl + "works")
-                        .then((value) => {
-                            if (value.ok) {
-                                return value.json();
-                            }
-                        })
-                        .then((projects) => {
-                            getAllProjects(projects, cardCreation);
-                        });
+                .then((projects) => {
+                    getAllProjects(projects, cardCreation);
+                    filtersApplication();
                 });
         });
-    });
 };
 
 const allProjectsSupression = () => {
-    gallerySupressionTrigger.addEventListener("click", () => {
-        const cards = supressionModalContent.querySelectorAll(".editing_card");
-        cards.forEach((card) => {
-            fetch(serverUrl + "works" + "/" + card.dataset.id, {
-                method: "DELETE",
-                headers: {
-                    Authorization: "Bearer " + "" + localStorage.token,
-                    "Content-Type": "application/json;charset=utf-8",
-                },
+    const cards = supressionModalContent.querySelectorAll(".editing_card");
+    cards.forEach((card) => {
+        fetch(serverUrl + "works" + "/" + card.dataset.id, {
+            method: "DELETE",
+            headers: {
+                Authorization: "Bearer " + "" + localStorage.token,
+                "Content-Type": "application/json;charset=utf-8",
+            },
+        })
+            .then((response) => {
+                // afficher succes/insucces de la supression
             })
-                .then((response) => {
-                    // afficher succes de la supression
-                })
-                .then(() => {
-                    gallery.innerHTML = "";
-                    fetch(serverUrl + "works")
-                        .then((value) => {
-                            if (value.ok) {
-                                return value.json();
-                            }
-                        })
-                        .then((projects) => {
-                            getAllProjects(projects, cardCreation);
-                        });
-                });
-        });
+            .then(() => {
+                gallery.innerHTML = "";
+                fetch(serverUrl + "works")
+                    .then((value) => {
+                        if (value.ok) {
+                            return value.json();
+                        }
+                    })
+                    .then((projects) => {
+                        getAllProjects(projects, cardCreation);
+                        filtersApplication();
+                    });
+            });
     });
 };
 
-const modalOpening = (modal) => {
-    overlay.classList.add("active");
-    modal.classList.add("active");
-};
-
-const modalClosing = (modal) => {
-    overlay.classList.remove("active");
-    modal.classList.remove("active");
-};
-
-const displayImage = () => {
-    const imageInput = addingModal.querySelector("#image_upload");
+// Fonctions d'affichage de l'image chargée, de gestion du style du bouton submit
+//  et de nettoyage du formulaire
+const displayImage = (imageInput, imageContainer) => {
     let uploadedImage = "";
     imageInput.addEventListener("change", function () {
         const reader = new FileReader();
         reader.addEventListener("load", () => {
             uploadedImage = reader.result;
-            addingModal.querySelector(
-                ".image_upload_container"
-            ).style.backgroundImage = `url(${uploadedImage})`;
+            imageContainer.style.backgroundImage = `url(${uploadedImage})`;
         });
         reader.readAsDataURL(this.files[0]);
     });
 };
 
-const toggleSubmitButtonStyle = () => {
-    const submitButton = addingModal.querySelector('input[type="submit"');
-    modalForm.addEventListener("change", () => {
-        if (image.value && title.value && category.value) {
-            submitButton.classList.remove("inactive_button");
-        } else {
-            submitButton.classList.add("inactive_button");
-        }
-    });
+const toggleButtonStyle = (button) => {
+    if (image.value && title.value && category.value) {
+        button.classList.remove("inactive_button");
+    } else {
+        button.classList.add("inactive_button");
+    }
 };
 
-// Ouverture et gestion de la modale supression au clic
+function formClearing() {
+    image.value = "";
+    title.value = "";
+    category.value = "";
+    uploadedImageContainer.style.backgroundImage = "";
+}
+
+// Ouverture de la modale supression au clic
+const projectsEditingButton = document.querySelector(
+    "#projects_editing_button"
+);
 projectsEditingButton.addEventListener("click", () => {
     modalOpening(supressionModal);
     supressionModalContent.innerHTML = "";
@@ -193,23 +183,54 @@ projectsEditingButton.addEventListener("click", () => {
                 return value.json();
             }
         })
+        // Création des cartes des projets dans la modale
         .then((projects) => getAllProjects(projects, modalCardCreation))
+
+        // MEP de la possibilité de supprimer un projet au clic sur l'icone de chaque carte
         .then(() => {
-            projectSupression();
-            allProjectsSupression();
+            let trashIcons = supressionModalContent.querySelectorAll(
+                ".project_supression_trigger"
+            );
+            trashIcons.forEach((icon) => {
+                icon.addEventListener("click", () => {
+                    let projectId = icon.closest(".editing_card").dataset.id;
+                    console.log(projectId);
+                    projectSupression(projectId);
+                });
+            });
+        })
+
+        // MEP de la possibilité de supprimer tous les projets
+        .then(() => {
+            const gallerySupressionTrigger = document.querySelector(
+                ".gallery_supression_trigger"
+            );
+            gallerySupressionTrigger.addEventListener(
+                "click",
+                allProjectsSupression
+            );
         })
         .catch((err) => {
             console.log(err);
         });
 });
 
-// Ouverture et gestion de la modale adding au clic
+// Ouverture de la modale adding au clic
+const addingModalTrigger = document.querySelector("#supression_modal input");
 addingModalTrigger.addEventListener("click", () => {
     modalClosing(supressionModal);
     modalOpening(addingModal);
-    displayImage();
-    toggleSubmitButtonStyle();
 
+    // Affichage de l'image chargée dans son conteneur
+    const imageUpload = addingModal.querySelector("#image_upload");
+    displayImage(imageUpload, uploadedImageContainer);
+
+    // Modification du style du bouton submit quand formulaire rempli
+    const submitButton = addingModal.querySelector('input[type="submit"');
+    const modalForm = addingModal.querySelector("form");
+    modalForm.addEventListener("input", () => toggleButtonStyle(submitButton));
+
+    // Envoi du nouveau projet sur le serveur
     modalForm.addEventListener("submit", (e) => {
         e.preventDefault();
         const projectData = new FormData(modalForm);
@@ -221,7 +242,11 @@ addingModalTrigger.addEventListener("click", () => {
             body: projectData,
         })
             .then((response) => {
-                console.log(response);
+                // Traiter la reponse pour informer l'utilisateur
+            })
+            .then((projects) => {
+                getAllProjects(projects, cardCreation);
+                filtersApplication();
             })
             .catch((error) => {
                 console.log(error);
@@ -230,6 +255,7 @@ addingModalTrigger.addEventListener("click", () => {
 });
 
 //Fermeture des modales au clic
+const previousModalIcon = document.querySelector(".previous_icon");
 previousModalIcon.addEventListener("click", () => {
     modalClosing(addingModal);
     modalOpening(supressionModal);
@@ -238,11 +264,14 @@ previousModalIcon.addEventListener("click", () => {
 overlay.addEventListener("click", () => {
     modalClosing(supressionModal);
     modalClosing(addingModal);
+    formClearing();
 });
 
+const modalClosingIcon = document.querySelectorAll(".modal_closing_icon");
 modalClosingIcon.forEach((icon) => {
     icon.addEventListener("click", () => {
         modalClosing(supressionModal);
         modalClosing(addingModal);
+        formClearing();
     });
 });

@@ -369,7 +369,7 @@ footer nav ul {
 .modal {
     opacity: 1;
     width: 40%;
-    max-width: 500px;
+    max-width: 800px;
     min-width: 300px;
     padding: 20px;
     position: absolute;
@@ -404,7 +404,7 @@ footer nav ul {
     font-size: 26px;
     font-weight: 400;
 }
-.modal > .modal_content {
+.modal .modal_content {
     width: 80%;
     padding: 35px 0 55px 0;
     border-bottom: 2px solid #b3b3b3;
@@ -444,16 +444,20 @@ footer nav ul {
     margin: -10px 0 10px 0;
     cursor: pointer;
 }
+#adding_modal form {
+    width: 70%;
+}
 #adding_modal .image_upload_container {
     width: 100%;
+    height: 170px;
     background-color: #e8f1f6;
-    background-size: cover;
+    background-size: contain;
     background-position: center;
+    background-repeat: no-repeat;
     display: flex;
     flex-direction: column;
     align-items: center;
-    align-self: center;
-    padding: 20px;
+    padding: 20px 0;
 }
 #adding_modal .image_upload_container #image_upload {
     display: none;
@@ -477,6 +481,17 @@ footer nav ul {
 #adding_modal .image_upload_container > p {
     font-size: 10px;
     color: #444444;
+}
+#adding_modal form::after {
+    content: "";
+    width: 100%;
+    height: 1px;
+    background-color: #b3b3b3;
+    position: relative;
+    bottom: 90px;
+}
+#adding_modal input[type="submit"] {
+    margin-top: 80px;
 }
 #adding_modal .inactive_button {
     background-color: #a7a7a7;
