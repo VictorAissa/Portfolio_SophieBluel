@@ -329,6 +329,16 @@ em {
 #login_section > a {
     text-decoration: underline;
 }
+#login_section .error_container {
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    align-items: flex-end;
+    font-family: "Syne";
+    font-size: 16px;
+    color: #3d3d3d;
+}
 input[type="submit"] {
     width: 180px;
     height: 35px;

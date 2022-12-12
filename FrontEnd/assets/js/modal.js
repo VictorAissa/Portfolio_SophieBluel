@@ -44,9 +44,7 @@ if (localStorage.token) {
 const supressionModal = document.querySelector("#supression_modal");
 const addingModal = document.querySelector("#adding_modal");
 const overlay = document.querySelector(".overlay");
-const supressionModalContent = document.querySelector(
-    "#supression_modal .modal_content"
-);
+const supressionModalContent = supressionModal.querySelector(".modal_content");
 const uploadedImageContainer = addingModal.querySelector(
     ".image_upload_container"
 );
@@ -144,7 +142,7 @@ const allProjectsSupression = () => {
 // Fonctions d'affichage de l'image chargée, de gestion du style du bouton submit
 //  et de nettoyage du formulaire
 const displayImage = (imageInput, imageContainer) => {
-    let uploadedImage = "";
+    let uploadedImage;
     imageInput.addEventListener("change", function () {
         const reader = new FileReader();
         reader.addEventListener("load", () => {
@@ -170,7 +168,7 @@ function formClearing() {
     uploadedImageContainer.style.backgroundImage = "";
 }
 
-// Ouverture de la modale supression au clic
+// Ouverture de la supressionModal au clic
 const projectsEditingButton = document.querySelector(
     "#projects_editing_button"
 );
@@ -194,7 +192,6 @@ projectsEditingButton.addEventListener("click", () => {
             trashIcons.forEach((icon) => {
                 icon.addEventListener("click", () => {
                     let projectId = icon.closest(".editing_card").dataset.id;
-                    console.log(projectId);
                     projectSupression(projectId);
                 });
             });
@@ -215,18 +212,18 @@ projectsEditingButton.addEventListener("click", () => {
         });
 });
 
-// Ouverture de la modale adding au clic
-const addingModalTrigger = document.querySelector("#supression_modal input");
+// Ouverture de la addingModal au clic
+const addingModalTrigger = supressionModal.querySelector("input");
 addingModalTrigger.addEventListener("click", () => {
     modalClosing(supressionModal);
     modalOpening(addingModal);
 
     // Affichage de l'image chargée dans son conteneur
-    const imageUpload = addingModal.querySelector("#image_upload");
-    displayImage(imageUpload, uploadedImageContainer);
+    const imageInput = addingModal.querySelector("#image_upload");
+    displayImage(imageInput, uploadedImageContainer);
 
     // Modification du style du bouton submit quand formulaire rempli
-    const submitButton = addingModal.querySelector('input[type="submit"');
+    const submitButton = addingModal.querySelector('input[type="submit"]');
     const modalForm = addingModal.querySelector("form");
     modalForm.addEventListener("input", () => toggleButtonStyle(submitButton));
 
