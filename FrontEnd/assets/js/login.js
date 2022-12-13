@@ -30,7 +30,7 @@ form.addEventListener("submit", (event) => {
                 }
 
                 // Création du conteneur et affichage des erreurs correspondantes
-                var errorContainer = document.createElement("div");
+                const errorContainer = document.createElement("div");
                 errorContainer.classList.add("error_container");
                 const connexionInput = form.querySelector(
                     'input[type="submit"]'
@@ -42,7 +42,7 @@ form.addEventListener("submit", (event) => {
                         "L'adresse mail n'est pas reconnue !";
                 }
                 if (response.status === 401) {
-                    errorContainer.innerText = "Mot de passe erroné !";
+                    errorContainer.innerText = "Le mot de passe incorrect !";
                 }
             } else {
                 return response.json();

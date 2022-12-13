@@ -158,7 +158,6 @@ body {
 }
 .editing_banner > i {
     font-size: 20px;
-    cursor: pointer;
 }
 .editing_banner > .changes_publication_button {
     width: 215px;
@@ -276,6 +275,7 @@ em {
     padding: 10px;
     font-size: 16px;
     font-weight: 700;
+    cursor: pointer;
 }
 .active_filter {
     background-color: #1d6154;
@@ -329,7 +329,7 @@ em {
 #login_section > a {
     text-decoration: underline;
 }
-#login_section .error_container {
+.error_container {
     height: 50px;
     display: flex;
     justify-content: center;
@@ -461,13 +461,23 @@ footer nav ul {
     width: 100%;
     height: 170px;
     background-color: #e8f1f6;
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
+
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 20px 0;
+    position: relative;
+}
+.image_display {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: none;
 }
 #adding_modal .image_upload_container #image_upload {
     display: none;
@@ -483,6 +493,7 @@ footer nav ul {
     padding: 0 20px;
     background-color: #cbd6dc;
     color: #306685;
+    cursor: pointer;
 }
 #adding_modal .image_upload_container > i {
     color: #b9c5cc;

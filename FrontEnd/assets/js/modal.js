@@ -45,26 +45,24 @@ const supressionModal = document.querySelector("#supression_modal");
 const addingModal = document.querySelector("#adding_modal");
 const overlay = document.querySelector(".overlay");
 const supressionModalContent = supressionModal.querySelector(".modal_content");
-const uploadedImageContainer = addingModal.querySelector(
-    ".image_upload_container"
-);
+const displayedImageContainer = addingModal.querySelector(".image_display");
 const image = addingModal.querySelector("#image_upload");
 const title = addingModal.querySelector("#title_input");
 const category = addingModal.querySelector("#category_input");
 
 // Fonctions de gestion d'ouverture/fermeture des modales
-const modalOpening = (modal) => {
+const openModal = (modal) => {
     overlay.classList.add("active");
     modal.classList.add("active");
 };
 
-const modalClosing = (modal) => {
+const closeModal = (modal) => {
     overlay.classList.remove("active");
     modal.classList.remove("active");
 };
 
-// Fonction de création des cartes de la modale supression
-const modalCardCreation = (project) => {
+// Fonction de création des cartes de la modale
+const createModalCard = (project) => {
     //Création de la card
     const editingCard = document.createElement("figure");
     editingCard.classList.add("editing_card");
@@ -84,33 +82,17 @@ const modalCardCreation = (project) => {
 };
 
 // Fonctions de supression d'un ou de tous les projets
-const projectSupression = (projectNumber) => {
+const deleteProject = (projectNumber) => {
     fetch(serverUrl + "works" + "/" + projectNumber, {
         method: "DELETE",
         headers: {
             Authorization: "Bearer " + "" + localStorage.token,
             "Content-Type": "application/json;charset=utf-8",
         },
-    })
-        .then((response) => {
-            // afficher succes/insucces de la supression
-        })
-        .then(() => {
-            gallery.innerHTML = "";
-            fetch(serverUrl + "works")
-                .then((value) => {
-                    if (value.ok) {
-                        return value.json();
-                    }
-                })
-                .then((projects) => {
-                    getAllProjects(projects, cardCreation);
-                    filtersApplication();
-                });
-        });
+    });
 };
 
-const allProjectsSupression = () => {
+const deleteAllProjects = () => {
     const cards = supressionModalContent.querySelectorAll(".editing_card");
     cards.forEach((card) => {
         fetch(serverUrl + "works" + "/" + card.dataset.id, {
@@ -119,23 +101,7 @@ const allProjectsSupression = () => {
                 Authorization: "Bearer " + "" + localStorage.token,
                 "Content-Type": "application/json;charset=utf-8",
             },
-        })
-            .then((response) => {
-                // afficher succes/insucces de la supression
-            })
-            .then(() => {
-                gallery.innerHTML = "";
-                fetch(serverUrl + "works")
-                    .then((value) => {
-                        if (value.ok) {
-                            return value.json();
-                        }
-                    })
-                    .then((projects) => {
-                        getAllProjects(projects, cardCreation);
-                        filtersApplication();
-                    });
-            });
+        });
     });
 };
 
@@ -149,7 +115,8 @@ const displayImage = (imageInput, imageContainer) => {
             uploadedImage = reader.result;
             imageContainer.style.backgroundImage = `url(${uploadedImage})`;
         });
-        reader.readAsDataURL(this.files[0]);
+        reader.readAsDataURL(imageInput.files[0]);
+        imageContainer.style.display = "block";
     });
 };
 
@@ -161,11 +128,12 @@ const toggleButtonStyle = (button) => {
     }
 };
 
-function formClearing() {
+function clearForm() {
     image.value = "";
     title.value = "";
     category.value = "";
-    uploadedImageContainer.style.backgroundImage = "";
+    displayedImageContainer.style.backgroundImage = "";
+    displayedImageContainer.style.display = "none";
 }
 
 // Ouverture de la supressionModal au clic
@@ -173,7 +141,9 @@ const projectsEditingButton = document.querySelector(
     "#projects_editing_button"
 );
 projectsEditingButton.addEventListener("click", () => {
-    modalOpening(supressionModal);
+    openModal(supressionModal);
+
+    // Nettoyage du contenu de la modale puis création des cartes
     supressionModalContent.innerHTML = "";
     fetch(serverUrl + "works")
         .then((value) => {
@@ -181,32 +151,45 @@ projectsEditingButton.addEventListener("click", () => {
                 return value.json();
             }
         })
-        // Création des cartes des projets dans la modale
-        .then((projects) => getAllProjects(projects, modalCardCreation))
+        .then((projects) => getAllProjects(projects, createModalCard))
 
-        // MEP de la possibilité de supprimer un projet au clic sur l'icone de chaque carte
         .then(() => {
+            // MEP de la possibilité de supprimer un projet au clic sur l'icone de chaque carte
             let trashIcons = supressionModalContent.querySelectorAll(
                 ".project_supression_trigger"
             );
             trashIcons.forEach((icon) => {
                 icon.addEventListener("click", () => {
                     let projectId = icon.closest(".editing_card").dataset.id;
-                    projectSupression(projectId);
+                    deleteProject(projectId);
                 });
             });
-        })
 
-        // MEP de la possibilité de supprimer tous les projets
-        .then(() => {
+            // MEP de la possibilité de supprimer tous les projets
             const gallerySupressionTrigger = document.querySelector(
                 ".gallery_supression_trigger"
             );
             gallerySupressionTrigger.addEventListener(
                 "click",
-                allProjectsSupression
+                deleteAllProjects
             );
         })
+
+        // Nettoyage et chargement des projets depuis le serveur
+        .then(() => {
+            gallery.innerHTML = "";
+            fetch(serverUrl + "works")
+                .then((value) => {
+                    if (value.ok) {
+                        return value.json();
+                    }
+                })
+                .then((projects) => {
+                    getAllProjects(projects, createCard);
+                    applyFilters();
+                });
+        })
+
         .catch((err) => {
             console.log(err);
         });
@@ -215,12 +198,12 @@ projectsEditingButton.addEventListener("click", () => {
 // Ouverture de la addingModal au clic
 const addingModalTrigger = supressionModal.querySelector("input");
 addingModalTrigger.addEventListener("click", () => {
-    modalClosing(supressionModal);
-    modalOpening(addingModal);
+    closeModal(supressionModal);
+    openModal(addingModal);
 
     // Affichage de l'image chargée dans son conteneur
     const imageInput = addingModal.querySelector("#image_upload");
-    displayImage(imageInput, uploadedImageContainer);
+    displayImage(imageInput, displayedImageContainer);
 
     // Modification du style du bouton submit quand formulaire rempli
     const submitButton = addingModal.querySelector('input[type="submit"]');
@@ -231,44 +214,65 @@ addingModalTrigger.addEventListener("click", () => {
     modalForm.addEventListener("submit", (e) => {
         e.preventDefault();
         const projectData = new FormData(modalForm);
-        fetch(serverUrl + "works", {
-            method: "POST",
-            headers: {
-                Authorization: "Bearer " + localStorage.token,
-            },
-            body: projectData,
-        })
-            .then((response) => {
-                // Traiter la reponse pour informer l'utilisateur
+
+        // Gestion des erreurs de saisie dans le formulaire
+        if (!projectData.get("image").name || !projectData.get("title")) {
+            let ExistingErrorContainer =
+                document.querySelector(".error_container");
+            if (ExistingErrorContainer) {
+                modalForm.removeChild(ExistingErrorContainer);
+            }
+
+            // Création du conteneur et affichage des erreurs correspondantes
+            const errorContainer = document.createElement("div");
+            errorContainer.classList.add("error_container");
+            const connexionInput = modalForm.querySelector(
+                'input[type="submit"]'
+            );
+            modalForm.insertBefore(errorContainer, connexionInput);
+            if (!projectData.get("image").name) {
+                errorContainer.innerText = "Chargez une image !";
+            }
+            if (!projectData.get("title")) {
+                errorContainer.innerText = "Renseignez un titre !";
+            }
+        } else {
+            fetch(serverUrl + "works", {
+                method: "POST",
+                headers: {
+                    Authorization: "Bearer " + localStorage.token,
+                },
+                body: projectData,
             })
-            .then((projects) => {
-                getAllProjects(projects, cardCreation);
-                filtersApplication();
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+                .then((projects) => {
+                    getAllProjects(projects, createCard);
+                    applyFilters();
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        }
     });
 });
 
 //Fermeture des modales au clic
 const previousModalIcon = document.querySelector(".previous_icon");
 previousModalIcon.addEventListener("click", () => {
-    modalClosing(addingModal);
-    modalOpening(supressionModal);
+    closeModal(addingModal);
+    openModal(supressionModal);
 });
 
 overlay.addEventListener("click", () => {
-    modalClosing(supressionModal);
-    modalClosing(addingModal);
-    formClearing();
+    closeModal(supressionModal);
+    closeModal(addingModal);
+    clearForm();
 });
 
 const modalClosingIcon = document.querySelectorAll(".modal_closing_icon");
 modalClosingIcon.forEach((icon) => {
     icon.addEventListener("click", () => {
-        modalClosing(supressionModal);
-        modalClosing(addingModal);
-        formClearing();
+        closeModal(supressionModal);
+        closeModal(addingModal);
+        clearForm();
     });
 });
