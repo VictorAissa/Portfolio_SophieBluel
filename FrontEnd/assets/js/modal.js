@@ -49,6 +49,7 @@ const displayedImageContainer = addingModal.querySelector(".image_display");
 const image = addingModal.querySelector("#image_upload");
 const title = addingModal.querySelector("#title_input");
 const category = addingModal.querySelector("#category_input");
+const submitButton = addingModal.querySelector('input[type="submit"]');
 
 // Fonctions de gestion d'ouverture/fermeture des modales
 const openModal = (modal) => {
@@ -200,59 +201,74 @@ const addingModalTrigger = supressionModal.querySelector("input");
 addingModalTrigger.addEventListener("click", () => {
     closeModal(supressionModal);
     openModal(addingModal);
+});
 
-    // Affichage de l'image chargée dans son conteneur
-    const imageInput = addingModal.querySelector("#image_upload");
-    displayImage(imageInput, displayedImageContainer);
+// Affichage de l'image chargée dans son conteneur
+const imageInput = addingModal.querySelector("#image_upload");
+displayImage(imageInput, displayedImageContainer);
 
-    // Modification du style du bouton submit quand formulaire rempli
-    const submitButton = addingModal.querySelector('input[type="submit"]');
-    const modalForm = addingModal.querySelector("form");
-    modalForm.addEventListener("input", () => toggleButtonStyle(submitButton));
+// Modification du style du bouton submit quand formulaire rempli
 
-    // Envoi du nouveau projet sur le serveur
-    modalForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const projectData = new FormData(modalForm);
+const modalForm = addingModal.querySelector("form");
+modalForm.addEventListener("input", () => toggleButtonStyle(submitButton));
 
-        // Gestion des erreurs de saisie dans le formulaire
-        if (!projectData.get("image").name || !projectData.get("title")) {
-            let ExistingErrorContainer =
-                document.querySelector(".error_container");
-            if (ExistingErrorContainer) {
-                modalForm.removeChild(ExistingErrorContainer);
-            }
+// Envoi du nouveau projet
+modalForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const projectData = new FormData(modalForm);
 
-            // Création du conteneur et affichage des erreurs correspondantes
-            const errorContainer = document.createElement("div");
-            errorContainer.classList.add("error_container");
-            const connexionInput = modalForm.querySelector(
-                'input[type="submit"]'
-            );
-            modalForm.insertBefore(errorContainer, connexionInput);
-            if (!projectData.get("image").name) {
-                errorContainer.innerText = "Chargez une image !";
-            }
-            if (!projectData.get("title")) {
-                errorContainer.innerText = "Renseignez un titre !";
-            }
-        } else {
-            fetch(serverUrl + "works", {
-                method: "POST",
-                headers: {
-                    Authorization: "Bearer " + localStorage.token,
-                },
-                body: projectData,
-            })
-                .then((projects) => {
-                    getAllProjects(projects, createCard);
-                    applyFilters();
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
+    // Gestion des erreurs de saisie dans le formulaire
+    if (
+        !projectData.get("image").name ||
+        !projectData.get("title") ||
+        !projectData.get("category")
+    ) {
+        let ExistingErrorContainer = document.querySelector(".error_container");
+        if (ExistingErrorContainer) {
+            modalForm.removeChild(ExistingErrorContainer);
         }
-    });
+
+        // Création du conteneur et affichage des erreurs correspondantes
+        const errorContainer = document.createElement("div");
+        errorContainer.classList.add("error_container");
+        const connexionInput = modalForm.querySelector('input[type="submit"]');
+        modalForm.insertBefore(errorContainer, connexionInput);
+        if (!projectData.get("image").name) {
+            errorContainer.innerText = "Choisissez une image !";
+        }
+        if (!projectData.get("title")) {
+            errorContainer.innerText = "Renseignez un titre !";
+        }
+        if (!projectData.get("category")) {
+            errorContainer.innerText = "Choisissez une catégorie !";
+        }
+    } else {
+        // Envoi du projet au serveur
+        fetch(serverUrl + "works", {
+            method: "POST",
+            headers: {
+                Authorization: "Bearer " + localStorage.token,
+            },
+            body: projectData,
+        })
+            .then(() => {
+                // Nettoyage et chargement des projets depuis le serveur
+                gallery.innerHTML = "";
+                fetch(serverUrl + "works")
+                    .then((value) => {
+                        if (value.ok) {
+                            return value.json();
+                        }
+                    })
+                    .then((projects) => {
+                        getAllProjects(projects, createCard);
+                        applyFilters();
+                    });
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
 });
 
 //Fermeture des modales au clic
@@ -266,6 +282,7 @@ overlay.addEventListener("click", () => {
     closeModal(supressionModal);
     closeModal(addingModal);
     clearForm();
+    toggleButtonStyle(submitButton);
 });
 
 const modalClosingIcon = document.querySelectorAll(".modal_closing_icon");
@@ -274,5 +291,6 @@ modalClosingIcon.forEach((icon) => {
         closeModal(supressionModal);
         closeModal(addingModal);
         clearForm();
+        toggleButtonStyle(submitButton);
     });
 });

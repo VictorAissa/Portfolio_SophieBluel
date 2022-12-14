@@ -361,7 +361,6 @@ footer nav ul {
 /* Modales */
 .overlay {
     display: none;
-    opacity: 0;
     width: 100%;
     height: 100%;
     position: fixed;
@@ -369,36 +368,28 @@ footer nav ul {
     right: 0;
     z-index: 1;
     background-color: #00000050;
-    transition: opacity 0.4s 0.2s ease-out;
 }
 .overlay.active {
     display: block;
-    opacity: 1;
-    transition: opacity 0.4s ease-out;
 }
 .modal {
-    opacity: 1;
     width: 40%;
-    max-width: 800px;
+    max-width: 750px;
     min-width: 300px;
     padding: 20px;
     position: absolute;
-    top: 55%;
+    top: 70%;
     left: 50%;
-    z-index: 10;
-    transform: translate(-50%, calc(-50% - 50px));
+    transform: translate(-50%, -50%);
     border-radius: 10px;
     background: #fff;
     display: none;
     flex-direction: column;
     align-items: center;
-    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+    z-index: 10;
 }
 .modal.active {
     display: flex;
-    opacity: 1;
-    transform: translate(-50%, -50%);
-    transition: opacity 0.4s 0.2s ease-out, transform 0.4s 0.2s ease-out;
 }
 .modal > header {
     width: 100%;
@@ -410,6 +401,7 @@ footer nav ul {
     cursor: pointer;
 }
 .modal > h3 {
+    margin-top: 20px;
     text-align: center;
     font-size: 26px;
     font-weight: 400;
@@ -418,6 +410,9 @@ footer nav ul {
     width: 80%;
     padding: 35px 0 55px 0;
     border-bottom: 2px solid #b3b3b3;
+}
+.modal input[type="submit"] {
+    width: 230px;
 }
 #supression_modal > header {
     justify-content: flex-end;
@@ -468,7 +463,7 @@ footer nav ul {
     padding: 20px 0;
     position: relative;
 }
-.image_display {
+#adding_modal .image_display {
     width: 100%;
     height: 100%;
     position: absolute;
@@ -479,11 +474,11 @@ footer nav ul {
     background-repeat: no-repeat;
     display: none;
 }
-#adding_modal .image_upload_container #image_upload {
-    display: none;
+#adding_modal .image_upload_container > i {
+    color: #b9c5cc;
+    font-size: 58px;
 }
 #adding_modal .image_upload_container label {
-    width: auto;
     height: 35px;
     border-radius: 999px;
     display: flex;
@@ -495,13 +490,13 @@ footer nav ul {
     color: #306685;
     cursor: pointer;
 }
-#adding_modal .image_upload_container > i {
-    color: #b9c5cc;
-    font-size: 58px;
+#adding_modal #image_upload {
+    display: none;
 }
 #adding_modal .image_upload_container > p {
     font-size: 10px;
     color: #444444;
+    padding-top: 10px;
 }
 #adding_modal form::after {
     content: "";

@@ -22,7 +22,6 @@ form.addEventListener("submit", (event) => {
         // Affichage des messages d'erreurs
         .then((response) => {
             if (!response.ok) {
-                // Supression de l'éventuel errorContainer existant dans le DOM
                 let ExistingErrorContainer =
                     document.querySelector(".error_container");
                 if (ExistingErrorContainer) {
@@ -48,6 +47,7 @@ form.addEventListener("submit", (event) => {
                 return response.json();
             }
         })
+
         //Stockage des userId et token puis redirection vers page d'accueil
         .then((data) => {
             localStorage.setItem("id", data.userId);
