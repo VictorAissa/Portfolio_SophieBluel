@@ -41,7 +41,8 @@ form.addEventListener("submit", (event) => {
                         "L'adresse mail n'est pas reconnue !";
                 }
                 if (response.status === 401) {
-                    errorContainer.innerText = "Le mot de passe incorrect !";
+                    errorContainer.innerText =
+                        "Le mot de passe est incorrect !";
                 }
             } else {
                 return response.json();

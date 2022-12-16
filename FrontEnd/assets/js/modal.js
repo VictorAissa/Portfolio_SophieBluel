@@ -45,11 +45,6 @@ const supressionModal = document.querySelector("#supression_modal");
 const addingModal = document.querySelector("#adding_modal");
 const overlay = document.querySelector(".overlay");
 const supressionModalContent = supressionModal.querySelector(".modal_content");
-const displayedImageContainer = addingModal.querySelector(".image_display");
-const image = addingModal.querySelector("#image_upload");
-const title = addingModal.querySelector("#title_input");
-const category = addingModal.querySelector("#category_input");
-const submitButton = addingModal.querySelector('input[type="submit"]');
 
 // Fonctions de gestion d'ouverture/fermeture des modales
 const openModal = (modal) => {
@@ -96,13 +91,7 @@ const deleteProject = (projectNumber) => {
 const deleteAllProjects = () => {
     const cards = supressionModalContent.querySelectorAll(".editing_card");
     cards.forEach((card) => {
-        fetch(serverUrl + "works" + "/" + card.dataset.id, {
-            method: "DELETE",
-            headers: {
-                Authorization: "Bearer " + "" + localStorage.token,
-                "Content-Type": "application/json;charset=utf-8",
-            },
-        });
+        deleteProject(card.dataset.id);
     });
 };
 
@@ -121,6 +110,10 @@ const displayImage = (imageInput, imageContainer) => {
     });
 };
 
+const image = addingModal.querySelector("#image_upload");
+const title = addingModal.querySelector("#title_input");
+const category = addingModal.querySelector("#category_input");
+
 const toggleButtonStyle = (button) => {
     if (image.value && title.value && category.value) {
         button.classList.remove("inactive_button");
@@ -129,12 +122,16 @@ const toggleButtonStyle = (button) => {
     }
 };
 
+const displayedImageContainer = addingModal.querySelector(".image_display");
+
 function clearForm() {
-    image.value = "";
-    title.value = "";
-    category.value = "";
+    modalForm.reset();
     displayedImageContainer.style.backgroundImage = "";
     displayedImageContainer.style.display = "none";
+    let ExistingErrorContainer = document.querySelector(".error_container");
+    if (ExistingErrorContainer) {
+        modalForm.removeChild(ExistingErrorContainer);
+    }
 }
 
 // Ouverture de la supressionModal au clic
@@ -208,7 +205,7 @@ const imageInput = addingModal.querySelector("#image_upload");
 displayImage(imageInput, displayedImageContainer);
 
 // Modification du style du bouton submit quand formulaire rempli
-
+const submitButton = addingModal.querySelector('input[type="submit"]');
 const modalForm = addingModal.querySelector("form");
 modalForm.addEventListener("input", () => toggleButtonStyle(submitButton));
 
@@ -233,6 +230,7 @@ modalForm.addEventListener("submit", (e) => {
         errorContainer.classList.add("error_container");
         const connexionInput = modalForm.querySelector('input[type="submit"]');
         modalForm.insertBefore(errorContainer, connexionInput);
+
         if (!projectData.get("image").name) {
             errorContainer.innerText = "Choisissez une image !";
         }
