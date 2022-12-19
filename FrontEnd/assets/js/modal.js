@@ -44,29 +44,21 @@ if (localStorage.token) {
 const supressionModal = document.querySelector("#supression_modal");
 const addingModal = document.querySelector("#adding_modal");
 const overlay = document.querySelector(".overlay");
-const supressionModalContent = document.querySelector(
-    "#supression_modal .modal_content"
-);
-const uploadedImageContainer = addingModal.querySelector(
-    ".image_upload_container"
-);
-const image = addingModal.querySelector("#image_upload");
-const title = addingModal.querySelector("#title_input");
-const category = addingModal.querySelector("#category_input");
+const supressionModalContent = supressionModal.querySelector(".modal_content");
 
-// Fonctions de gestion d'ouverture/fermeture des modales
-const modalOpening = (modal) => {
+// Fonctions d'ouverture/fermeture des modales
+const openModal = (modal) => {
     overlay.classList.add("active");
     modal.classList.add("active");
 };
 
-const modalClosing = (modal) => {
+const closeModal = (modal) => {
     overlay.classList.remove("active");
     modal.classList.remove("active");
 };
 
-// Fonction de création des cartes de la modale supression
-const modalCardCreation = (project) => {
+// Fonction de création des cartes de la modale
+const createModalCard = (project) => {
     //Création de la card
     const editingCard = document.createElement("figure");
     editingCard.classList.add("editing_card");
@@ -86,74 +78,41 @@ const modalCardCreation = (project) => {
 };
 
 // Fonctions de supression d'un ou de tous les projets
-const projectSupression = (projectNumber) => {
+const deleteProject = (projectNumber) => {
     fetch(serverUrl + "works" + "/" + projectNumber, {
         method: "DELETE",
         headers: {
             Authorization: "Bearer " + "" + localStorage.token,
             "Content-Type": "application/json;charset=utf-8",
         },
-    })
-        .then((response) => {
-            // afficher succes/insucces de la supression
-        })
-        .then(() => {
-            gallery.innerHTML = "";
-            fetch(serverUrl + "works")
-                .then((value) => {
-                    if (value.ok) {
-                        return value.json();
-                    }
-                })
-                .then((projects) => {
-                    getAllProjects(projects, cardCreation);
-                    filtersApplication();
-                });
-        });
+    });
 };
 
-const allProjectsSupression = () => {
+const deleteAllProjects = () => {
     const cards = supressionModalContent.querySelectorAll(".editing_card");
     cards.forEach((card) => {
-        fetch(serverUrl + "works" + "/" + card.dataset.id, {
-            method: "DELETE",
-            headers: {
-                Authorization: "Bearer " + "" + localStorage.token,
-                "Content-Type": "application/json;charset=utf-8",
-            },
-        })
-            .then((response) => {
-                // afficher succes/insucces de la supression
-            })
-            .then(() => {
-                gallery.innerHTML = "";
-                fetch(serverUrl + "works")
-                    .then((value) => {
-                        if (value.ok) {
-                            return value.json();
-                        }
-                    })
-                    .then((projects) => {
-                        getAllProjects(projects, cardCreation);
-                        filtersApplication();
-                    });
-            });
+        deleteProject(card.dataset.id);
     });
 };
 
 // Fonctions d'affichage de l'image chargée, de gestion du style du bouton submit
 //  et de nettoyage du formulaire
 const displayImage = (imageInput, imageContainer) => {
-    let uploadedImage = "";
+    let uploadedImage;
     imageInput.addEventListener("change", function () {
         const reader = new FileReader();
         reader.addEventListener("load", () => {
             uploadedImage = reader.result;
             imageContainer.style.backgroundImage = `url(${uploadedImage})`;
         });
-        reader.readAsDataURL(this.files[0]);
+        reader.readAsDataURL(imageInput.files[0]);
+        imageContainer.style.display = "block";
     });
 };
+
+const image = addingModal.querySelector("#image_upload");
+const title = addingModal.querySelector("#title_input");
+const category = addingModal.querySelector("#category_input");
 
 const toggleButtonStyle = (button) => {
     if (image.value && title.value && category.value) {
@@ -163,19 +122,26 @@ const toggleButtonStyle = (button) => {
     }
 };
 
-function formClearing() {
-    image.value = "";
-    title.value = "";
-    category.value = "";
-    uploadedImageContainer.style.backgroundImage = "";
+const displayedImageContainer = addingModal.querySelector(".image_display");
+
+function clearForm() {
+    modalForm.reset();
+    displayedImageContainer.style.backgroundImage = "";
+    displayedImageContainer.style.display = "none";
+    let ExistingErrorContainer = document.querySelector(".error_container");
+    if (ExistingErrorContainer) {
+        modalForm.removeChild(ExistingErrorContainer);
+    }
 }
 
-// Ouverture de la modale supression au clic
+// Ouverture de la supressionModal au clic
 const projectsEditingButton = document.querySelector(
     "#projects_editing_button"
 );
 projectsEditingButton.addEventListener("click", () => {
-    modalOpening(supressionModal);
+    openModal(supressionModal);
+
+    // Nettoyage du contenu de la modale puis création des cartes
     supressionModalContent.innerHTML = "";
     fetch(serverUrl + "works")
         .then((value) => {
@@ -183,57 +149,98 @@ projectsEditingButton.addEventListener("click", () => {
                 return value.json();
             }
         })
-        // Création des cartes des projets dans la modale
-        .then((projects) => getAllProjects(projects, modalCardCreation))
+        .then((projects) => getAllProjects(projects, createModalCard))
 
-        // MEP de la possibilité de supprimer un projet au clic sur l'icone de chaque carte
         .then(() => {
+            // MEP de la possibilité de supprimer un projet au clic sur l'icone de chaque carte
             let trashIcons = supressionModalContent.querySelectorAll(
                 ".project_supression_trigger"
             );
             trashIcons.forEach((icon) => {
                 icon.addEventListener("click", () => {
                     let projectId = icon.closest(".editing_card").dataset.id;
-                    console.log(projectId);
-                    projectSupression(projectId);
+                    deleteProject(projectId);
                 });
             });
-        })
 
-        // MEP de la possibilité de supprimer tous les projets
-        .then(() => {
+            // MEP de la possibilité de supprimer tous les projets
             const gallerySupressionTrigger = document.querySelector(
                 ".gallery_supression_trigger"
             );
             gallerySupressionTrigger.addEventListener(
                 "click",
-                allProjectsSupression
+                deleteAllProjects
             );
         })
+
+        // Nettoyage et chargement des projets depuis le serveur
+        .then(() => {
+            gallery.innerHTML = "";
+            fetch(serverUrl + "works")
+                .then((value) => {
+                    if (value.ok) {
+                        return value.json();
+                    }
+                })
+                .then((projects) => {
+                    getAllProjects(projects, createCard);
+                    applyFilters();
+                });
+        })
+
         .catch((err) => {
             console.log(err);
         });
 });
 
-// Ouverture de la modale adding au clic
-const addingModalTrigger = document.querySelector("#supression_modal input");
+// Ouverture de la addingModal au clic
+const addingModalTrigger = supressionModal.querySelector("input");
 addingModalTrigger.addEventListener("click", () => {
-    modalClosing(supressionModal);
-    modalOpening(addingModal);
+    closeModal(supressionModal);
+    openModal(addingModal);
+});
 
-    // Affichage de l'image chargée dans son conteneur
-    const imageUpload = addingModal.querySelector("#image_upload");
-    displayImage(imageUpload, uploadedImageContainer);
+// Affichage de l'image chargée dans son conteneur
+const imageInput = addingModal.querySelector("#image_upload");
+displayImage(imageInput, displayedImageContainer);
 
-    // Modification du style du bouton submit quand formulaire rempli
-    const submitButton = addingModal.querySelector('input[type="submit"');
-    const modalForm = addingModal.querySelector("form");
-    modalForm.addEventListener("input", () => toggleButtonStyle(submitButton));
+// Modification du style du bouton submit quand formulaire rempli
+const submitButton = addingModal.querySelector("#modal_form_validation");
+const modalForm = addingModal.querySelector("form");
+modalForm.addEventListener("input", () => toggleButtonStyle(submitButton));
 
-    // Envoi du nouveau projet sur le serveur
-    modalForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const projectData = new FormData(modalForm);
+// Envoi du nouveau projet
+modalForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const projectData = new FormData(modalForm);
+
+    // Gestion des erreurs de saisie dans le formulaire
+    if (
+        !projectData.get("image").name ||
+        !projectData.get("title") ||
+        !projectData.get("category")
+    ) {
+        let ExistingErrorContainer = document.querySelector(".error_container");
+        if (ExistingErrorContainer) {
+            modalForm.removeChild(ExistingErrorContainer);
+        }
+
+        // Création du conteneur et affichage des erreurs correspondantes
+        const errorContainer = document.createElement("div");
+        errorContainer.classList.add("error_container");
+        modalForm.insertBefore(errorContainer, submitButton);
+
+        if (!projectData.get("category")) {
+            errorContainer.innerText = "Choisissez une catégorie !";
+        }
+        if (!projectData.get("title")) {
+            errorContainer.innerText = "Renseignez un titre !";
+        }
+        if (!projectData.get("image").name) {
+            errorContainer.innerText = "Choisissez une image !";
+        }
+    } else {
+        // Envoi du projet au serveur
         fetch(serverUrl + "works", {
             method: "POST",
             headers: {
@@ -241,37 +248,46 @@ addingModalTrigger.addEventListener("click", () => {
             },
             body: projectData,
         })
-            .then((response) => {
-                // Traiter la reponse pour informer l'utilisateur
-            })
-            .then((projects) => {
-                getAllProjects(projects, cardCreation);
-                filtersApplication();
+            .then(() => {
+                // Nettoyage et chargement des projets depuis le serveur
+                gallery.innerHTML = "";
+                fetch(serverUrl + "works")
+                    .then((value) => {
+                        if (value.ok) {
+                            return value.json();
+                        }
+                    })
+                    .then((projects) => {
+                        getAllProjects(projects, createCard);
+                        applyFilters();
+                    });
             })
             .catch((error) => {
                 console.log(error);
             });
-    });
+    }
 });
 
 //Fermeture des modales au clic
 const previousModalIcon = document.querySelector(".previous_icon");
 previousModalIcon.addEventListener("click", () => {
-    modalClosing(addingModal);
-    modalOpening(supressionModal);
+    closeModal(addingModal);
+    openModal(supressionModal);
 });
 
 overlay.addEventListener("click", () => {
-    modalClosing(supressionModal);
-    modalClosing(addingModal);
-    formClearing();
+    closeModal(supressionModal);
+    closeModal(addingModal);
+    clearForm();
+    toggleButtonStyle(submitButton);
 });
 
 const modalClosingIcon = document.querySelectorAll(".modal_closing_icon");
 modalClosingIcon.forEach((icon) => {
     icon.addEventListener("click", () => {
-        modalClosing(supressionModal);
-        modalClosing(addingModal);
-        formClearing();
+        closeModal(supressionModal);
+        closeModal(addingModal);
+        clearForm();
+        toggleButtonStyle(submitButton);
     });
 });

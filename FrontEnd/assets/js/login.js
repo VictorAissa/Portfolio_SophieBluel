@@ -7,6 +7,7 @@ let form = document.querySelector("form");
 //Envoi des données du formulaire au clic sur input
 form.addEventListener("submit", (event) => {
     event.preventDefault();
+
     const user = {
         email: emailInput.value,
         password: passwordInput.value,
@@ -18,17 +19,36 @@ form.addEventListener("submit", (event) => {
         },
         body: JSON.stringify(user),
     })
-        //Affichage des messages d'erreurs selon validité des champs remplis
+        // Affichage des messages d'erreurs
         .then((response) => {
-            if (response.ok === false) {
-                // Afficher reponse dans conteneur approprié
-                if (response.status === 404) alert("L'adresse mail est fausse");
-                if (response.status === 401) alert("Le mdp est faux");
+            if (!response.ok) {
+                let ExistingErrorContainer =
+                    document.querySelector(".error_container");
+                if (ExistingErrorContainer) {
+                    form.removeChild(ExistingErrorContainer);
+                }
+
+                // Création du conteneur et affichage des erreurs correspondantes
+                const errorContainer = document.createElement("div");
+                errorContainer.classList.add("error_container");
+                const connexionInput = form.querySelector(
+                    'input[type="submit"]'
+                );
+                form.insertBefore(errorContainer, connexionInput);
+
+                if (response.status === 404) {
+                    errorContainer.innerText =
+                        "L'adresse mail n'est pas reconnue !";
+                }
+                if (response.status === 401) {
+                    errorContainer.innerText =
+                        "Le mot de passe est incorrect !";
+                }
             } else {
-                alert("Vous êtes connecté");
                 return response.json();
             }
         })
+
         //Stockage des userId et token puis redirection vers page d'accueil
         .then((data) => {
             localStorage.setItem("id", data.userId);

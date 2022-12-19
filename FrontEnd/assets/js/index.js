@@ -9,7 +9,7 @@ filters.classList.add("filters");
 portfolio.insertBefore(filters, gallery);
 
 // Fonction de création des filtres
-const filterCreation = (element, classes = [], content) => {
+const createFilter = (element, classes = [], content) => {
     let filter = document.createElement(element);
     classes.forEach((classe) => {
         filter.classList.add(classe);
@@ -18,8 +18,10 @@ const filterCreation = (element, classes = [], content) => {
     filters.append(filter);
 };
 
+const button = createFilter("button", ["filter", "active_filter"], "Tous");
+
 // Fonction de création et affichage des cards
-const cardCreation = (project) => {
+const createCard = (project) => {
     const card = document.createElement("figure");
     card.classList.add("card");
     card.dataset.category = project.categoryId;
@@ -44,11 +46,9 @@ const getAllProjects = (projects, fonction) => {
         fonction(project);
     });
 };
-// Création du premier bouton des filtres
-const button = filterCreation("button", ["filter", "active_filter"], "Tous");
 
 // Fonction d'application des filtres
-const filtersApplication = () => {
+const applyFilters = () => {
     let filtersList = document.querySelectorAll(".filter");
     filtersList.forEach((filter, index) => {
         filter.addEventListener("click", function () {
@@ -58,11 +58,10 @@ const filtersApplication = () => {
                 .classList.remove("active_filter");
             this.classList.add("active_filter");
 
-            // Masquage par défaut de toutes les cartes
+            // Masquage des cartes puis affichage selon filtre cliqué
             let cards = document.querySelectorAll(".card");
             for (let card of cards) {
                 card.style.display = "none";
-                // Affichage des cartes au clic sur le filtre correspondant
                 if (index === 0 || index == card.dataset.category) {
                     card.style.display = "block";
                 }
@@ -81,7 +80,7 @@ fetch(serverUrl + "categories")
     // Création des boutons des filtres par catégorie
     .then((categories) => {
         categories.forEach((category) => {
-            filterCreation("button", ["filter"], category.name);
+            createFilter("button", ["filter"], category.name);
         });
     })
     .catch((err) => {
@@ -97,8 +96,8 @@ fetch(serverUrl + "works")
     })
     // Création des cards et affichage par défaut
     .then((projects) => {
-        getAllProjects(projects, cardCreation);
-        filtersApplication();
+        getAllProjects(projects, createCard);
+        applyFilters();
     })
     .catch((err) => {
         console.log(err);

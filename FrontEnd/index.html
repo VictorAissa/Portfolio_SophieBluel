@@ -15,14 +15,12 @@
 </head>
 
 <body>
-
-
 	<header>
 		<h1>Sophie Bluel <span>Architecte d'intérieur</span></h1>
 		<nav>
 			<ul>
-				<li>projets</li>
-				<li>contact</li>
+				<li><a href="#portfolio">projets</a></li>
+				<li><a href="#contact">contact</a></li>
 				<li><a href="./login.html">login</a></li>
 				<li><img src="./assets/icons/instagram.png" alt="Instagram"></li>
 			</ul>
@@ -31,7 +29,7 @@
 	<main>
 		<section id="introduction">
 			<figure>
-				<img src="./assets/images/sophie-bluel.png" alt="">
+				<img src="./assets/images/sophie-bluel.png" alt="Portrait de l'artiste">
 			</figure>
 			<article>
 				<h2>Designer d'espace</h2>
@@ -85,7 +83,6 @@
 		<div class="gallery_supression_trigger">Supprimer la galerie</div>
 	</div>
 
-
 	<div id="adding_modal" class="modal form_sections">
 		<header>
 			<i class="fa-solid fa-arrow-left-long previous_icon"></i>
@@ -94,22 +91,22 @@
 		<h3>Ajout photo</h3>
 		<form>
 			<div class="image_upload_container">
+				<div class="image_display"></div>
 				<i class="fa-regular fa-image"></i>
 				<label for="image_upload">+ Ajouter photo</label>
 				<input type="file" id="image_upload" name="image" accept="image/png, image/jpeg">
 				<p>jpg, png : 4mo max</p>
 			</div>
-
 			<label for="title_input">Titre</label>
 			<input type="text" name="title" id="title_input">
 			<label for="category_input">Catégorie</label>
-			<select name="category" id="category_input" value="Catégorie">
+			<select name="category" id="category_input">
 				<option value="1">Objets</option>
 				<option value="2">Appartements</option>
 				<option value="3">Hotels & restaurants</option>
 			</select>
 
-			<input type="submit" value="Valider" class="inactive_button">
+			<input type="submit" id="modal_form_validation" value="Valider" class="inactive_button">
 		</form>
 	</div>
 
