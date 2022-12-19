@@ -46,7 +46,7 @@ const addingModal = document.querySelector("#adding_modal");
 const overlay = document.querySelector(".overlay");
 const supressionModalContent = supressionModal.querySelector(".modal_content");
 
-// Fonctions de gestion d'ouverture/fermeture des modales
+// Fonctions d'ouverture/fermeture des modales
 const openModal = (modal) => {
     overlay.classList.add("active");
     modal.classList.add("active");
@@ -205,7 +205,7 @@ const imageInput = addingModal.querySelector("#image_upload");
 displayImage(imageInput, displayedImageContainer);
 
 // Modification du style du bouton submit quand formulaire rempli
-const submitButton = addingModal.querySelector('input[type="submit"]');
+const submitButton = addingModal.querySelector("#modal_form_validation");
 const modalForm = addingModal.querySelector("form");
 modalForm.addEventListener("input", () => toggleButtonStyle(submitButton));
 
@@ -228,17 +228,16 @@ modalForm.addEventListener("submit", (e) => {
         // Création du conteneur et affichage des erreurs correspondantes
         const errorContainer = document.createElement("div");
         errorContainer.classList.add("error_container");
-        const connexionInput = modalForm.querySelector('input[type="submit"]');
-        modalForm.insertBefore(errorContainer, connexionInput);
+        modalForm.insertBefore(errorContainer, submitButton);
 
-        if (!projectData.get("image").name) {
-            errorContainer.innerText = "Choisissez une image !";
+        if (!projectData.get("category")) {
+            errorContainer.innerText = "Choisissez une catégorie !";
         }
         if (!projectData.get("title")) {
             errorContainer.innerText = "Renseignez un titre !";
         }
-        if (!projectData.get("category")) {
-            errorContainer.innerText = "Choisissez une catégorie !";
+        if (!projectData.get("image").name) {
+            errorContainer.innerText = "Choisissez une image !";
         }
     } else {
         // Envoi du projet au serveur
