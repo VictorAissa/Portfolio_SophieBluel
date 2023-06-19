@@ -167,10 +167,9 @@ projectsEditingButton.addEventListener("click", () => {
             const gallerySupressionTrigger = document.querySelector(
                 ".gallery_supression_trigger"
             );
-            gallerySupressionTrigger.addEventListener(
-                "click",
-                deleteAllProjects
-            );
+            gallerySupressionTrigger.addEventListener("click", () => {
+                deleteAllProjects;
+            });
         })
 
         // Nettoyage et chargement des projets depuis le serveur
@@ -260,7 +259,8 @@ modalForm.addEventListener("submit", (e) => {
                     .then((projects) => {
                         getAllProjects(projects, createCard);
                         applyFilters();
-                    });
+                    })
+                    .then(() => closeModal(addingModal));
             })
             .catch((error) => {
                 console.log(error);
